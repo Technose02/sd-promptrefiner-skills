@@ -45,6 +45,27 @@ invent — see step 3.
 
 Read the matched reference file before composing. Do not write from memory of other image models.
 
+### 2a. Analyse every reference image yourself (edit modes only)
+
+When one or more source images are present, the skill — not the diffusion model — must extract
+and commit every factual attribute the model needs to render correctly. Diffusion text encoders
+never reason; they follow instructions. Every spatial, tonal and contextual claim in the prompt
+must come from what the agent observes.
+
+- Read every visible element relevant to the edit: objects (count, colour, material, position),
+  people (pose, expression, hair, clothing, accessories), in-image text (every character,
+  verbatim, with position, font, colour, language), lighting (source, direction, quality),
+  composition and rendering medium.
+- **Into the prompt:** extracted facts the model needs in text — text strings, object counts,
+  colours, materials, spatial layout, lighting direction, poses, expressions. These are
+  reasoned facts the encoder would never derive from the pixels alone.
+- **Left to the reference image:** fine-grained identity/preservation that the pixel signal
+  serves better than words — facial proportions, exact product markings, subtle material
+  texture. Point at `<imageN>` rather than narrating contours.
+- If a detail is ambiguous (distant, blurred, partly hidden), hedge with "appears to be"
+  rather than inventing; for unreadable text, ask the user for the exact string.
+- Every image must be inspected for in-image text regardless of whether the user mentioned it.
+
 ### 3. Scale elaboration to intent (the single most important 2.1 rule)
 
 - **Local edit / attribute change / text edit / quality or style pass / canvas transform** →

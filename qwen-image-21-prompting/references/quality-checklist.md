@@ -39,6 +39,25 @@ choice in one bullet.
 
 ## Edit modes (`edit-1`, `edit-N`, `extract`)
 
+### Image analysis — skill reasons, diffusion never does
+
+- [ ] Every visible element relevant to the edit has been read from the reference image(s) —
+      objects (count, colour, material, position), people (pose, expression, hair, clothing),
+      in-image text (every string, verbatim, with position and style), lighting (source,
+      direction, quality), composition, rendering medium.
+- [ ] LLM-extracted facts that the model needs to render correctly are committed in the prompt
+      text (text strings, object counts, colours, materials, spatial layout, lighting direction).
+- [ ] Fine-grained identity/preservation is left to the reference image (point at `<imageN>`)
+      rather than narrated in pixel-level detail — "facial identity from <image2>" not
+      "almond-shaped hazel eyes".
+- [ ] Unreliable or ambiguous visible elements are hedged rather than invented ("appears to be
+      dark navy", "a label too small to read").
+- [ ] Every image has been inspected for in-image text regardless of whether the user mentioned
+      it — text present in the input must be addressed in the edit (preserved, changed, or
+      explicitly replaced).
+
+### Instruction shape
+
 - [ ] The operation leads the sentence ("Change…", "Replace…", "Remove… and fill…", "Keep… unchanged, add…").
 - [ ] Requested change is pushed to a **strong, observable** degree — no "slightly", "a bit", "subtle".
 - [ ] One blanket preservation clause exists and names the canvas plus the invariants

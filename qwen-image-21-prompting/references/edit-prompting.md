@@ -39,6 +39,21 @@ glowing, everything else unchanged", not "slightly brighten the headlights".
 there. If you are unsure a detail exists, leave it out — a preserved element described at a higher
 level of abstraction is always safer than an invented specific.
 
+**Split the work: the LLM reasons, the diffusion stage renders.** Diffusion-model text encoders
+never "reason" — they follow instructions. So:
+- **Into the prompt (LLM's job):** concrete observable facts that the agent extracts by looking:
+  text strings (quoted verbatim), object counts and placement, colours, materials, lighting
+  direction, poses, expressions, spatial layout. These help the model place, light and relate
+  objects correctly.
+- **Carried by the reference image (diffusion's job):** fine-grained identity and preservation
+  that the pixel signal serves better than words — facial proportions, exact product markings,
+  subtle material texture, the input's rendering medium. The prompt says "keep the person's
+  facial identity from <image2>" but does not try to narrate every contour.
+- When in doubt about which side a fact belongs on, ask: *"Can the LLM extract and commit this
+  with high confidence, and does the model need it in text to render correctly?"* If yes →
+  write it. If the reference image already carries it adequately and a textual duplicate would
+  risk contradiction or drift → point at the image.
+
 **Say what stays, without repainting it.** Name untargeted content by type, position and role rather
 than by appearance, and prefer **one blanket preservation clause** over walking the frame. A preservation
 description reads to the model as a *generation* instruction: the more concretely you describe something
