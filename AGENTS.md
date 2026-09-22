@@ -29,6 +29,27 @@ paste-ready prompt plus the sizing/sampling decisions reported beside it.
 5. **Do not mix model families.** Each skill encodes one model's official prompting contract. Rules,
    defaults and examples from other models (earlier versions included) must not leak in.
 
+6. **The skill reasons; the diffusion model does not.** Diffusion models' text encoders (CLIP, MLLM,
+   or joint encoders) work in instruction/description mode — they never "reason" about content.
+   When reference images or rich context are present in the user's request, the skill **must
+   analyse them to extract factual attributes** (counts, colours, materials, text strings, spatial
+   relationships, poses, expressions, lighting) and encode those *into the prompt text explicitly*.
+   The reference images are still forwarded to the diffusion stage for identity/preservation, but
+   everything an LLM can extract more reliably than a text encoder is the skill's job to commit.
+   - What belongs in the prompt: concrete observable facts derived from looking at the images
+     ("three wooden chairs", "the woman wears a navy jacket and wire-rim glasses", "a sign reads
+     'BOULANGERIE' in gold serif letters").
+   - What stays with the reference image only: fine-grained identity/preservation that is best
+     served by the pixel signal (face proportions, exact product markings, subtle material
+     texture). The prompt still says "preserve the face and body of <image1>" — it doesn't try
+     to narrate every pixel.
+   - **Tension resolution:** when a model's official spec says "don't describe preserved content
+     in appearance detail" (to prevent drift), the skill must weigh: *is the extracted fact
+     needed for correct rendering, or is the reference image sufficient?* Facts that help the
+     model place, light, or relate objects in the scene belong in text; pure identity
+     preservation belongs with the image. Document the trade-off per-skill in the failure-mode
+     table and checklist.
+
 ## Skill conventions
 
 ### Naming
@@ -66,6 +87,11 @@ paste-ready prompt plus the sizing/sampling decisions reported beside it.
 - Encode the model's **language rules** exactly (prompt prose language vs. rendered in-image text
   language, where applicable).
 - Keep the skill's voice: precise, decisive, no hedging in delivered prompts.
+- **Image analysis is the skill's job.** When reference images are in-context, the skill must
+  extract concrete observable facts from them (subject attributes, text, layout, materials,
+  lighting, poses) and commit those into the prompt; the diffusion model's encoder never reasons.
+  The reference image still carries identity/preservation, but the prompt carries the
+  LLM-derived facts.
 
 ## Adding a skill for a new model
 
@@ -153,7 +179,8 @@ Verify across the whole collection:
   hard-scope phrasing, checklist-as-gates style, voice (precise, decisive, no hedging in delivered
   prompts).
 - **No cross-family bleed**: grep each skill for other models' names/defaults; mentions are allowed
-  only in "do-not-confuse" lists.
+  only in "do-not-confuse" lists or as clearly-labelled upstream provenance (e.g. "the upstream
+  rewrite spec was adapted from model X's"), never as rules, defaults or examples to follow.
 - **Hygiene**: no host-project names, absolute paths, TODOs or leftover research notes committed;
   `.pi/` untouched and still git-ignored; stale `.pi/skills` symlinks from renames are flagged to the
   user, not fixed in-repo.
